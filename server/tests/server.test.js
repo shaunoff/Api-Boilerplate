@@ -16,7 +16,7 @@ beforeEach((done) => {
     return Todo.insertMany(todos)
   }).then(()=>done());
 });
-
+//POST TEST
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {
     var text = 'Test todo text';
@@ -58,7 +58,7 @@ describe('POST /todos', () => {
       });
   });
 });
-
+//GET TEST
 describe('GET /todos', () => {
   it('should get all todos', (done) => {
     request(app)
