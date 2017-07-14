@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb')
 const {mongoose} = require('./db/mongoose');
@@ -7,8 +8,10 @@ const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
 
 var app = express();
-
+app.use(cors())
 app.use(bodyParser.json());
+
+
 
 app.post('/todos', (req, res) => {
   var todo = new Todo({
