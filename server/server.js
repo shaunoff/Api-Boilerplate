@@ -1,11 +1,10 @@
-const _ = require('lodash')
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
 const bodyParser = require('body-parser');
-const {mongoose} = require('./db/mongoose');
-const {Todo} = require('./models/todo');
-const {User} = require('./models/user');
+
+
+const port = process.env.PORT || 3009
 
 var app = express();
 app.use(cors())
@@ -29,8 +28,8 @@ app.use('/', routes);
 
 
 
-app.listen(3009, () => {
-  console.log('Started on port 3009');
+app.listen(port, () => {
+  console.log(`Started on port ${port}`);
 });
 
 module.exports = {app};

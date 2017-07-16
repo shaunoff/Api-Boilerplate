@@ -9,7 +9,9 @@ const requireAuth = passport.authenticate('jwt', { session: false });
 const todos = require('./todos');
 const auth = require('./auth');
 
+//all /todos routes require authentication
 routes.use('/todos',requireAuth, todos);
+
 routes.use('/auth', auth);
 
 routes.get('/', (req, res) => {
