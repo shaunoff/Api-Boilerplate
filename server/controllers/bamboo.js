@@ -46,7 +46,7 @@ exports.test = (req, res, next)=> {
   .then(function(response) {
     const result = response.data.kind
     const bamboo = new Bamboo({
-      data: req.employees[0].fields
+      data: req.body
     });
     bamboo.save().then((doc) => {
       transporter.sendMail(mailOptions, (error, info) => {
