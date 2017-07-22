@@ -25,7 +25,7 @@ const axios = require('axios')
 //     text: 'Hello world ?', // plain text body
 //     html: "gsfhjdfghjdfghjdfghjdfsgjhdfs" // html body
 // };
-const keyFile = process.env.GOOGLE_KEY ? 'process.env.GOOGLE_KEY' : '../../key.pem'
+const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
 
 exports.test = (req, res, next)=> {
  console.log(keyFile)
