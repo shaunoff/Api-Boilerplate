@@ -28,13 +28,12 @@ const axios = require('axios')
 const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
 
 exports.test = (req, res, next)=> {
- console.log(keyFile)
   googleAuth.authenticate({
   // use the email address of the service account, as seen in the API console
   email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
   delegationEmail: "shutch@p3i-inc.com",
   // use the PEM file we generated from the downloaded key
-  keyFile: keyFile,
+  key: keyFile,
   // specify the scopes you wish to access
   scopes: ['https://www.googleapis.com/auth/admin.directory.user']
 }, function (err, token) {
