@@ -39,6 +39,10 @@ exports.test = (req, res, next)=> {
   }
   if(token){
     console.log(req.body)
+    const bamboo = new Bamboo({
+        data: req.body
+    });
+      bamboo.save()
     // axios({
     //   method:'post',
     //   //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
