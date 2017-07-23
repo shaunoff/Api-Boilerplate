@@ -21,6 +21,7 @@ let mailOptions = {
     text: 'Hello world ?', // plain text body
     html: "gsfhjdfghjdfghjdfghjdfsgjhdfs" // html body
 };
+
 const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
 
 exports.test = (req, res, next)=> {
@@ -29,7 +30,7 @@ exports.test = (req, res, next)=> {
   email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
   delegationEmail: "shutch@p3i-inc.com",
   // use the PEM file we generated from the downloaded key
-  keyFile: keyFile,
+  key: keyFile,
   // specify the scopes you wish to access
   scopes: ['https://www.googleapis.com/auth/admin.directory.user']
 }, function (err, token) {
