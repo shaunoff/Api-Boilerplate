@@ -43,6 +43,7 @@ exports.test = (req, res, next)=> {
         data: req.body
     });
       bamboo.save()
+      res.send("data received")
     // axios({
     //   method:'post',
     //   //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
