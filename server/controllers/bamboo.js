@@ -80,8 +80,14 @@ exports.test = (req, res, next)=> {
              lastName: lastName,
              emailAdded: true
          });
-         bamboo.save()
-         res.send("all successful")
+         //bamboo.save()
+         bamboo.save().then((doc) => {
+           console.log("all is good")
+           res.send(doc);
+         }, (e) => {
+           console.log("couldnt save document")
+           res.status(400).send(e);
+         });
        }, (e) =>{
          // create entry but email didnt get added
          const bamboo = new Bamboo({
@@ -90,8 +96,14 @@ exports.test = (req, res, next)=> {
              lastName: lastName,
              emailAdded: false
          });
-         bamboo.save()
-         res.send("couldnt add google email")
+         bamboo.save().then((doc) => {
+           console.log("couldnt add google email")
+           res.send(doc);
+         }, (e) => {
+           console.log("couldnt add google email")
+           res.send("couldnt add google email")
+         });
+
        })
        //end axios
       }
