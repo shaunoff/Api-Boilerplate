@@ -25,25 +25,28 @@ let mailOptions = {
 const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
 
 exports.test = (req, res, next)=> {
-  googleAuth.authenticate({
-  // use the email address of the service account, as seen in the API console
-  email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
-  delegationEmail: "shutch@p3i-inc.com",
-  // use the PEM file we generated from the downloaded key
-  key: keyFile,
-  // specify the scopes you wish to access
-  scopes: ['https://www.googleapis.com/auth/admin.directory.user']
-}, function (err, token) {
-  if(err){
-    console.log(err)
-  }
-  if(token){
-    console.log(req.body)
-    const bamboo = new Bamboo({
-        data: req.body
-    });
-      bamboo.save()
-      res.send("data received")
+  const empNum = req.body.data.employees[0].fields["Employee #"]
+  console.log(empNum)
+  // const bamboo = new Bamboo({
+  //     data: req.body.data.employees[0].fields
+  // });
+  // bamboo.save()
+  res.send("data received")
+//   googleAuth.authenticate({
+//   // use the email address of the service account, as seen in the API console
+//   email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
+//   delegationEmail: "shutch@p3i-inc.com",
+//   // use the PEM file we generated from the downloaded key
+//   key: keyFile,
+//   // specify the scopes you wish to access
+//   scopes: ['https://www.googleapis.com/auth/admin.directory.user']
+// }, function (err, token) {
+//   if(err){
+//     console.log(err)
+//   }
+//   if(token){
+//     console.log(req.body)
+
     // axios({
     //   method:'post',
     //   //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
@@ -75,10 +78,10 @@ exports.test = (req, res, next)=> {
     //     console.log(e);
     //   });
     // });
-  }
+  // }
 
 
-});
+// });
 
 
 
