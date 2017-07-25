@@ -25,7 +25,7 @@ let mailOptions = {
 const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
 
 exports.test = (req, res, next)=> {
-  const empNum = req.body
+  const empNum = req.body.employees[0].fields["Employee #"]
   console.log(empNum)
   // const bamboo = new Bamboo({
   //     data: req.body.data.employees[0].fields
