@@ -4,6 +4,8 @@ const { mjml2html } =require('mjml')
 var googleAuth = require('google-oauth-jwt')
 const axios = require('axios')
 
+const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
+
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -38,7 +40,7 @@ const tokenPromise = ()=>{
     })
   })
 }
-const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
+
 
 exports.test = (req, res, next)=> {
   let employee = req.body.employees[0]
