@@ -1,6 +1,7 @@
 const {Bamboo} = require('../models/bamboo');
 const nodemailer = require('nodemailer');
 const { mjml2html } =require('mjml')
+const htmlOutput =require('../email/welcomeEmail')
 var googleAuth = require('google-oauth-jwt')
 const axios = require('axios')
 
@@ -58,12 +59,13 @@ exports.test = (req, res, next)=> {
     workEmail,
     emailAdded: false
   }
+  let emailHtml = htmlOutput(empData)
+  console.log(emailHtml)
   let mailOptions = {
-      from: '"P3I HR Team" <shutch@p3i-inc.com>', // sender address
+      from: '"P3I Onbaording Team" <shutch@p3i-inc.com>', // sender address
       to: personalEmail, // list of receivers
-      subject: 'Email Succesful', // Subject line
-      text: 'Hello world ?', // plain text body
-      html: "gsfhjdfghjdfghjdfghjdfsgjhdfs" // html body
+      subject: 'Welcome to the P3I Team', // Subject line
+      html: emailHtml.html // html body
   };
   const emailPromise = () =>{
     return new Promise((resolve,reject)=>{
@@ -102,6 +104,7 @@ exports.test = (req, res, next)=> {
         empData.emailAdded = true
         const bamboo = new Bamboo(empData);
         const newEmp = await bamboo.save()
+        console.log(newEmp)
         const email = await emailPromise()
         console.log("all is good")
         res.send(newEmp)
@@ -114,9 +117,7 @@ exports.test = (req, res, next)=> {
     }
     catch(err){
       console.log("caught error, gmail not added")
-      const bamboo = new Bamboo(empData);
-      const newEmp = await bamboo.save()
-      res.send(newEmp)
+      res.send("caught error, gmail not added")
     }
 
   }
