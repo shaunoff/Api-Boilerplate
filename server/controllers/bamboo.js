@@ -4,39 +4,22 @@ const { mjml2html } =require('mjml')
 var googleAuth = require('google-oauth-jwt')
 const axios = require('axios')
 
-// let transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true, // secure:true for port 465, secure:false for port 587
-//     auth: {
-//         user: 'shutch@p3i-inc.com',
-//         pass: 'Woodbird966'
-//     }
-// });
-//
-// let mailOptions = {
-//     from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
-//     to: 'shutch@p3i-inc.com', // list of receivers
-//     subject: 'Hello ✔', // Subject line
-//     text: 'Hello world ?', // plain text body
-//     html: "gsfhjdfghjdfghjdfghjdfsgjhdfs" // html body
-// };
-
-const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
-
-exports.test = (req, res, next)=> {
-  let employee = req.body.employees[0]
-  const empNum = employee.fields["Employee #"]
-
-  employee.empNum = empNum
-  Bamboo.findOne({empNum: empNum}).then((emp)=>{
-    // Check if employee with number already exists
-    if(emp){
-      // If already exists do nothing
-      console.log("employee already exists")
-      return res.send("employee already exists")
+let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // secure:true for port 465, secure:false for port 587
+    auth: {
+        user: 'shutch@p3i-inc.com',
+        pass: 'Woodbird966'
     }
-    // If doesnt exist add google account
+});
+
+
+
+
+
+const tokenPromise = ()=>{
+  return new Promise((resolve,reject)=>{
     googleAuth.authenticate({
        // use the email address of the service account, as seen in the API console
        email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
@@ -46,71 +29,168 @@ exports.test = (req, res, next)=> {
        // specify the scopes you wish to access
        scopes: ['https://www.googleapis.com/auth/admin.directory.user']
     }, function (err, token) {
-     if(err){
-       console.log("google auth error")
-       // need to add to database but no google
-       return res.send(err)
-     }
-
-
-     if(token){
-       console.log("token receieved")
-       const firstName = employee.fields["First Name"]
-       const lastName =  employee.fields["Last Name"]
-       const email = employee.fields["Work Email"]
-       axios({
-         method:'post',
-         //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
-         url:'https://www.googleapis.com/admin/directory/v1/users',
-         data:{
-           name: {
-             familyName: firstName,
-             givenName: lastName
-           },
-           password: 'p3ipassword',
-           primaryEmail: email,
-         },
-         headers: {Authorization: `Bearer ${token}`}
-       })
-       .then((response)=>{
-
-         const bamboo = new Bamboo({
-             empNum: empNum,
-             firstName: firstName,
-             lastName: lastName,
-             emailAdded: true
-         });
-         //bamboo.save()
-         bamboo.save().then((doc) => {
-           console.log("all is good")
-           res.send(doc);
-         }, (e) => {
-           console.log("couldnt save document")
-           res.status(400).send(e);
-         });
-       }, (e) =>{
-         // create entry but email didnt get added
-         const bamboo = new Bamboo({
-             empNum: empNum,
-             firstName: firstName,
-             lastName: lastName,
-             emailAdded: false
-         });
-         bamboo.save().then((doc) => {
-           console.log("couldnt add google email")
-           res.send(doc);
-         }, (e) => {
-           console.log("couldnt add google email")
-           res.send("couldnt add google email")
-         });
-
-       })
-       //end axios
+      if(token){
+        resolve(token)
       }
-      //end Google request
+      if (err){
+        reject(err)
+      }
     })
   })
 }
+const keyFile = process.env.GOOGLE_KEY ? process.env.GOOGLE_KEY : '../../key.pem'
+
+exports.test = (req, res, next)=> {
+  let employee = req.body.employees[0]
+  const empNum = employee.fields["Employee #"]
+  const firstName = employee.fields["First Name"]
+  const lastName =  employee.fields["Last Name"]
+  const personalEmail = employee.fields["Personal Email"]
+  const workEmail = employee.fields["Work Email"]
+  employee.empNum = empNum
+  const empData = {
+    empNum,
+    firstName,
+    lastName,
+    personalEmail,
+    workEmail,
+    emailAdded: false
+  }
+  let mailOptions = {
+      from: '"P3I HR Team" <shutch@p3i-inc.com>', // sender address
+      to: personalEmail, // list of receivers
+      subject: 'Email Succesful', // Subject line
+      text: 'Hello world ?', // plain text body
+      html: "gsfhjdfghjdfghjdfghjdfsgjhdfs" // html body
+  };
+  const emailPromise = () =>{
+    return new Promise((resolve,reject)=>{
+      transporter.sendMail(mailOptions, (error,info)=>{
+        if(error){
+          reject(error)
+          return
+        }
+        resolve(info)
+      })
+    })
+  }
+
+  const makeRequest = async ()=>{
+    try {
+      const currentUser = await Bamboo.findOne({empNum: empNum})
+      if (!currentUser){
+        console.log("no user carry on")
+        const token = await tokenPromise()
+        console.log(token)
+        const googleUser = await axios({
+                 method:'post',
+                 //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
+                 url:'https://www.googleapis.com/admin/directory/v1/users',
+                 data:{
+                   name: {
+                     familyName: firstName,
+                     givenName: lastName
+                   },
+                   password: 'p3ipassword',
+                   primaryEmail: workEmail,
+                 },
+                 headers: {Authorization: `Bearer ${token}`}
+               })
+        console.log(googleUser.data)
+        empData.emailAdded = true
+        const bamboo = new Bamboo(empData);
+        const newEmp = await bamboo.save()
+        const email = await emailPromise()
+        console.log("all is good")
+        res.send(newEmp)
+      }
+      else {
+        console.log("user already exists")
+        return res.send("user already exists")
+      }
+
+    }
+    catch(err){
+      console.log("caught error, gmail not added")
+      const bamboo = new Bamboo(empData);
+      const newEmp = await bamboo.save()
+      res.send(newEmp)
+    }
+
+  }
+  makeRequest()
+}
+  // Check if employee with number already exists
+//   Bamboo.findOne({empNum: empNum}).then((emp)=>{
+//     if(emp){
+//       // If already exists do nothing
+//       console.log("employee already exists")
+//       return res.send("employee already exists")
+//     }
+//     // If doesnt exist add google account
+//     googleAuth.authenticate({
+//        // use the email address of the service account, as seen in the API console
+//        email: 'new-directory@appraisal-158816.iam.gserviceaccount.com',
+//        delegationEmail: "shutch@p3i-inc.com",
+//        // use the PEM file we generated from the downloaded key
+//        keyFile: keyFile,
+//        // specify the scopes you wish to access
+//        scopes: ['https://www.googleapis.com/auth/admin.directory.user']
+//     }, function (err, token) {
+//      if(err){
+//        console.log("google auth error")
+//        const bamboo = new Bamboo(empData);
+//        return res.send(err)
+//      }
+//
+//
+//      if(token){
+//        console.log("token receieved")
+//
+//        axios({
+//          method:'post',
+//          //url:'https://www.googleapis.com/admin/directory/v1/users?domain=p3i-inc.com&query=orgUnitPath:/Employees&maxResults=500',
+//          url:'https://www.googleapis.com/admin/directory/v1/users',
+//          data:{
+//            name: {
+//              familyName: firstName,
+//              givenName: lastName
+//            },
+//            password: 'p3ipassword',
+//            primaryEmail: email,
+//          },
+//          headers: {Authorization: `Bearer ${token}`}
+//        })
+//        .then((response)=>{
+//          empData.emailAdded = true
+//          const bamboo = new Bamboo(empData);
+//          //bamboo.save()
+//          bamboo.save().then((doc) => {
+//            console.log("all is good")
+//            res.send(doc);
+//          }, (e) => {
+//            console.log("couldnt save document")
+//            res.status(400).send(e);
+//          });
+//        }, (e) =>{
+//          // create entry but email didnt get added
+//          empData.emailAdded = false
+//          const bamboo = new Bamboo(empData);
+//          bamboo.save().then((doc) => {
+//            console.log("couldnt add google email")
+//            res.send("couldnt add google email");
+//          }, (e) => {
+//            console.log("couldnt add google email or add data to datababse")
+//            res.status(400).send(e)
+//          });
+//
+//        })
+//        //end axios
+//       }
+//       //end Google request
+//     })
+//   })
+// }
 
 
 
