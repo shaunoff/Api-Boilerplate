@@ -47,7 +47,7 @@ exports.test = (req, res, next)=> {
   const empNum = employee.fields["Employee #"]
   const firstName = employee.fields["First Name"]
   const lastName =  employee.fields["Last Name"]
-  const personalEmail = employee.fields["Personal Email"]
+  const personalEmail = employee.fields["Home Email"]
   const workEmail = employee.fields["Work Email"]
   employee.empNum = empNum
   const empData = {
@@ -90,8 +90,8 @@ exports.test = (req, res, next)=> {
                  url:'https://www.googleapis.com/admin/directory/v1/users',
                  data:{
                    name: {
-                     familyName: firstName,
-                     givenName: lastName
+                     familyName: lastName,
+                     givenName: firstName
                    },
                    password: 'p3ipassword',
                    primaryEmail: workEmail,
