@@ -62,7 +62,7 @@ exports.test = (req, res, next)=> {
   let emailHtml = htmlOutput(empData)
   console.log(emailHtml)
   let mailOptions = {
-      from: '"P3I Onbaording Team" <shutch@p3i-inc.com>', // sender address
+      from: '"P3I Onboarding Team" <shutch@p3i-inc.com>', // sender address
       to: personalEmail, // list of receivers
       subject: 'Welcome to the P3I Team', // Subject line
       html: emailHtml.html // html body
