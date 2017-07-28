@@ -41,7 +41,13 @@ const tokenPromise = ()=>{
     })
   })
 }
-
+exports.getUsers = (req, res, next)=> {
+  Bamboo.find({}).then((users)=>{
+    res.send({users})
+  }, (e) =>{
+    res.status(400).send(e)
+  });
+}
 
 exports.test = (req, res, next)=> {
   let employee = req.body.employees[0]
