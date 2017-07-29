@@ -15,6 +15,10 @@ const postSchema = new Schema({
     trim: true,
     minlength: 1,
   },
+  date:{
+    type : Date,
+    default: Date.now
+  },
   content: {
     type: String,
     required: true,
