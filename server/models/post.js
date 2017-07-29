@@ -15,7 +15,7 @@ const postSchema = new Schema({
     trim: true,
     minlength: 1,
   },
-  Author: {
+  author: {
     type: String,
     required: true,
     minlength: 1,
