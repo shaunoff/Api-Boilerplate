@@ -15,6 +15,11 @@ const postSchema = new Schema({
     trim: true,
     minlength: 1,
   },
+  Author: {
+    type: String,
+    required: true,
+    minlength: 1,
+  },
   date:{
     type : Date,
     default: Date.now

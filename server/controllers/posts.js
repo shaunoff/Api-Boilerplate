@@ -1,11 +1,12 @@
 const {Post} = require('../models/post');
 
 exports.createPost = (req, res, next)=> {
-  const {title,category,content} = req.body
+  const {title,category,content,author} = req.body
   var post = new Post({
     title,
     category,
-    content
+    content,
+    author
   });
 
   post.save().then((doc) => {
