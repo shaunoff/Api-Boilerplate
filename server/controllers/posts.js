@@ -15,3 +15,11 @@ exports.createPost = (req, res, next)=> {
     res.status(400).send(e);
   });
 }
+
+exports.getPosts = (req, res, next)=> {
+  Post.find({}).then((posts)=>{
+    res.send({posts})
+  }, (e) =>{
+    res.status(400).send(e)
+  });
+}
