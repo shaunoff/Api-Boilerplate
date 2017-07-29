@@ -7,11 +7,13 @@ const requireAuth = passport.authenticate('jwt', { session: false });
 
 
 const todos = require('./todos');
+const posts = require('./posts');
 const auth = require('./auth');
 const bamboo = require('./bamboo');
 
 //all /todos routes require authentication
 routes.use('/todos',requireAuth, todos);
+routes.use('/posts', posts);
 
 routes.use('/auth', auth);
 
