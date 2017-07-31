@@ -23,3 +23,14 @@ exports.getPosts = (req, res, next)=> {
     res.status(400).send(e)
   });
 }
+exports.postView = (req, res, next)=> {
+  const { id } = req.params
+  Post.findOne({_id: id}).then((post)=>{
+    if(!post){
+      return res.status(404).send()
+    }
+    res.send({post})
+  }, (e) =>{
+    res.status(400).send()
+  });
+}

@@ -20,6 +20,10 @@ const postSchema = new Schema({
     required: true,
     minlength: 1,
   },
+  excerpt: {
+    type: String,
+    minlength: 1,
+  },
   date:{
     type : Date,
     default: Date.now
