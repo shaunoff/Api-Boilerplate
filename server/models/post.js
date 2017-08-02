@@ -10,10 +10,8 @@ const postSchema = new Schema({
     minlength: 1,
   },
   category: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 1,
+    type: Object,
+    required: true
   },
   author: {
     type: String,

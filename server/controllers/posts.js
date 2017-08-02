@@ -1,19 +1,24 @@
 const {Post} = require('../models/post');
+const {PostCat} = require('../models/postCategories');
 
 exports.createPost = (req, res, next)=> {
-  const {title,category,content,author} = req.body
-  var post = new Post({
-    title,
-    category,
-    content,
-    author
-  });
+  const {title,category,content,author,excerpt} = req.body
+  PostCat.findOne({category: category}).then((cat)=>{
+    var post = new Post({
+      title,
+      category: cat,
+      content,
+      author,
+      excerpt
+    });
 
-  post.save().then((doc) => {
-    res.send(doc);
-  }, (e) => {
-    res.status(400).send(e);
-  });
+    post.save().then((doc) => {
+      res.send(doc);
+    }, (e) => {
+      res.status(400).send(e);
+    });
+  })
+
 }
 
 exports.getPosts = (req, res, next)=> {
@@ -32,5 +37,27 @@ exports.postView = (req, res, next)=> {
     res.send({post})
   }, (e) =>{
     res.status(400).send()
+  });
+}
+
+exports.getPostCats = (req, res, next)=> {
+  PostCat.find({}).then((cats)=>{
+    res.send({cats})
+  }, (e) =>{
+    res.status(400).send(e)
+  });
+}
+exports.addPostCat = (req, res, next)=> {
+  const {category,icon} = req.body
+  var cat = new PostCat({
+    category,
+    icon
+  });
+
+  cat.save().then((doc) => {
+    console.log(doc)
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
   });
 }
