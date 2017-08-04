@@ -20,6 +20,45 @@ exports.createPost = (req, res, next)=> {
   })
 
 }
+exports.deletePost = async (req,res) => {
+  const id = req.params.id;
+  try {
+    const post = await Post.findByIdAndRemove(id)
+    if (!post){
+      console.log('No category with that name')
+      return res.status(400).send('No post with that name')
+    }
+    res.send({post})
+  }
+  catch(err){
+    console.log(err,"caught error, post could not delete post")
+    res.status(404).send("could not delete post")
+  }
+}
+exports.updatePost = async (req,res) => {
+    const id = req.params.id
+    const {category} = req.body
+    try {
+      const postCat = await PostCat.findOne({category: category})
+      if (!postCat){
+        console.log('No category with that name')
+        return res.status(400).send('No category with that name')
+      }
+      //convert req body to category object
+      req.body.category = postCat
+      const updatedPost = await Post.findByIdAndUpdate(id, { $set: req.body}, {new: true})
+      if (!updatedPost){
+        console.log('post could not update')
+        return res.status(404).send('post could not update')
+      }
+      return res.send(updatedPost)
+    }
+    catch(err){
+      console.log(err,"caught error, post could not update")
+      res.status(404).send("post could not update")
+    }
+}
+
 
 exports.getPosts = (req, res, next)=> {
   Post.find({}).then((posts)=>{
@@ -28,16 +67,19 @@ exports.getPosts = (req, res, next)=> {
     res.status(400).send(e)
   });
 }
-exports.postView = (req, res, next)=> {
+exports.postView = async (req, res, next)=> {
   const { id } = req.params
-  Post.findOne({_id: id}).then((post)=>{
+  try {
+    const post = await Post.findOne({_id: id})
     if(!post){
-      return res.status(404).send()
+      return res.status(404).send('no post with that id found')
     }
     res.send({post})
-  }, (e) =>{
-    res.status(400).send()
-  });
+  }
+  catch(err){
+    console.log(err,'no post with that id found')
+    res.status(404).send('no post with that id found')
+  }
 }
 
 exports.getPostCats = (req, res, next)=> {

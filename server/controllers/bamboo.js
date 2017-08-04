@@ -102,6 +102,7 @@ exports.test = (req, res, next)=> {
                      givenName: firstName
                    },
                    password: 'p3ipassword',
+                   changePasswordAtNextLogin: true,
                    primaryEmail: workEmail,
                  },
                  headers: {Authorization: `Bearer ${token}`}
