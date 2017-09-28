@@ -70,7 +70,7 @@ exports.test = (req, res, next)=> {
   let mailOptions = {
       from: '"P3I Onboarding Team" <shutch@p3i-inc.com>', // sender address
       to: personalEmail, // list of receivers
-      cc: "smhutch@p3i-inc.com"
+      cc: "smhutch@p3i-inc.com",
       subject: 'Welcome to the P3I Team', // Subject line
       html: emailHtml.html // html body
   };
